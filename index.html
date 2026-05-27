@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>n8n MCP Mega Library — 284 MCP Tool Servers</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080b0a;
+  --surface: #0f1410;
+  --border: rgba(99,255,180,0.12);
+  --accent: #63ffb4;
+  --accent2: #3de8ff;
+  --text: #e8f0ec;
+  --muted: rgba(232,240,236,0.4);
+  --faint: rgba(232,240,236,0.12);
+}
+
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  font-weight: 300;
+  line-height: 1.6;
+  overflow-x: hidden;
+}
+
+/* Grid overlay */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(99,255,180,0.025) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(99,255,180,0.025) 1px, transparent 1px);
+  background-size: 48px 48px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* NAV */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  padding: 20px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(8,11,10,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+}
+.nav-logo {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+}
+.nav-cta {
+  background: var(--accent);
+  color: #080b0a;
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  padding: 10px 20px;
+  border-radius: 3px;
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.nav-cta:hover { opacity: 0.85; }
+
+/* HERO */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding: 120px 48px 80px;
+  z-index: 1;
+}
+
+.hero-glow {
+  position: absolute;
+  width: 800px; height: 800px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(99,255,180,0.06) 0%, transparent 65%);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -55%);
+  pointer-events: none;
+}
+
+.hero-content {
+  max-width: 860px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 7px 16px;
+  margin-bottom: 40px;
+  background: rgba(99,255,180,0.05);
+}
+.hero-badge-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 8px var(--accent);
+  animation: pulse 2s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+.hero-badge span {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.hero-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(48px, 7vw, 88px);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 28px;
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--accent);
+}
+
+.hero-sub {
+  font-size: 18px;
+  color: var(--muted);
+  max-width: 560px;
+  margin: 0 auto 48px;
+  line-height: 1.7;
+}
+
+.hero-actions {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #080b0a;
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  padding: 16px 32px;
+  border-radius: 3px;
+  text-decoration: none;
+  transition: opacity 0.2s, transform 0.2s;
+}
+.btn-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+.btn-secondary {
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.06em;
+  padding: 16px 32px;
+  border-radius: 3px;
+  text-decoration: none;
+  transition: border-color 0.2s, color 0.2s;
+}
+.btn-secondary:hover { border-color: var(--accent); color: var(--accent); }
+
+/* STATS */
+.stats {
+  position: relative;
+  z-index: 1;
+  padding: 0 48px 100px;
+}
+.stats-grid {
+  max-width: 800px;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--surface);
+}
+.stat-item {
+  padding: 32px 24px;
+  text-align: center;
+  border-right: 1px solid var(--border);
+}
+.stat-item:last-child { border-right: none; }
+.stat-num {
+  font-family: 'DM Serif Display', serif;
+  font-size: 42px;
+  color: var(--text);
+  line-height: 1;
+  margin-bottom: 8px;
+}
+.stat-num.accent { color: var(--accent); }
+.stat-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+/* SECTION */
+section {
+  position: relative;
+  z-index: 1;
+  padding: 80px 48px;
+}
+.section-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: clamp(32px, 4vw, 48px);
+  line-height: 1.15;
+  margin-bottom: 16px;
+}
+.section-sub {
+  font-size: 16px;
+  color: var(--muted);
+  max-width: 520px;
+  line-height: 1.7;
+}
+
+/* HOW IT WORKS */
+.how {
+  max-width: 900px;
+  margin: 0 auto;
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 48px;
+  background: var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.step {
+  background: var(--surface);
+  padding: 32px;
+}
+.step-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--accent);
+  letter-spacing: 0.1em;
+  margin-bottom: 16px;
+}
+.step-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px;
+  margin-bottom: 10px;
+}
+.step-desc {
+  font-size: 14px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* CATEGORIES */
+.categories-section { max-width: 1000px; margin: 0 auto; }
+.cat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+  margin-top: 48px;
+  background: var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.cat-card {
+  background: var(--surface);
+  padding: 28px;
+  transition: background 0.2s;
+}
+.cat-card:hover { background: rgba(99,255,180,0.04); }
+.cat-icon {
+  font-size: 20px;
+  margin-bottom: 12px;
+}
+.cat-name {
+  font-family: 'DM Mono', monospace;
+  font-size: 12px;
+  color: var(--accent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.cat-items {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+/* HALL OF FAME */
+.hof-section { max-width: 700px; margin: 0 auto; }
+.hof-list {
+  margin-top: 48px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.hof-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 28px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+.hof-item:last-child { border-bottom: none; }
+.hof-item:hover { background: rgba(99,255,180,0.03); }
+.hof-name {
+  font-size: 15px;
+  color: var(--text);
+}
+.hof-ops {
+  font-family: 'DM Mono', monospace;
+  font-size: 13px;
+  color: var(--accent);
+  letter-spacing: 0.06em;
+}
+
+/* FREE SAMPLE */
+.sample-section {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+}
+.sample-card {
+  margin-top: 48px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 40px;
+  background: var(--surface);
+}
+.sample-card h3 {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+.sample-card p {
+  font-size: 15px;
+  color: var(--muted);
+  margin-bottom: 28px;
+  line-height: 1.7;
+}
+.sample-tags {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 28px;
+}
+.tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  padding: 5px 12px;
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  color: var(--muted);
+  letter-spacing: 0.08em;
+}
+
+/* PRICING */
+.pricing-section { max-width: 600px; margin: 0 auto; text-align: center; }
+.price-card {
+  margin-top: 48px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  padding: 48px;
+  background: var(--surface);
+  position: relative;
+  overflow: hidden;
+}
+.price-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+.price-tag {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+.price-currency {
+  font-family: 'DM Serif Display', serif;
+  font-size: 28px;
+  color: var(--muted);
+}
+.price-amount {
+  font-family: 'DM Serif Display', serif;
+  font-size: 72px;
+  line-height: 1;
+  color: var(--text);
+}
+.price-note {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+.price-features {
+  list-style: none;
+  text-align: left;
+  margin-bottom: 36px;
+}
+.price-features li {
+  padding: 10px 0;
+  border-bottom: 1px solid var(--faint);
+  font-size: 15px;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.price-features li::before {
+  content: '→';
+  font-family: 'DM Mono', monospace;
+  color: var(--accent);
+  font-size: 12px;
+}
+
+/* FOOTER */
+footer {
+  position: relative;
+  z-index: 1;
+  border-top: 1px solid var(--border);
+  padding: 40px 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: gap;
+}
+.footer-links {
+  display: flex;
+  gap: 24px;
+}
+.footer-links a {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--muted);
+  text-decoration: none;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+}
+.footer-links a:hover { color: var(--accent); }
+.footer-copy {
+  font-family: 'DM Mono', monospace;
+  font-size: 11px;
+  color: var(--faint);
+  letter-spacing: 0.08em;
+}
+
+/* DIVIDER */
+.divider {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 0 48px;
+}
+
+@media (max-width: 768px) {
+  nav { padding: 16px 24px; }
+  .hero { padding: 100px 24px 60px; }
+  .stats { padding: 0 24px 60px; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  section { padding: 60px 24px; }
+  .steps { grid-template-columns: 1fr; }
+  .cat-grid { grid-template-columns: repeat(2, 1fr); }
+  footer { padding: 32px 24px; flex-direction: column; gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-logo">The MCP Library</div>
+  <a href="https://the-mcp-library.lemonsqueezy.com/checkout/buy/25462b52-79da-40cf-ba28-53c5d0bc84bf?discount=0" class="nav-cta">Get the library — $99</a>
+</nav>
+
+<div class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <div class="hero-badge-dot"></div>
+      <span>n8n · MCP Tool Servers · Production Ready</span>
+    </div>
+    <h1 class="hero-title">
+      <em>284</em> MCP Tool Servers<br>for n8n
+    </h1>
+    <p class="hero-sub">
+      Every major API exposed as native operations for your AI agents.
+      Import, activate, deploy — no custom code required.
+    </p>
+    <div class="hero-actions">
+      <a href="https://the-mcp-library.lemonsqueezy.com/checkout/buy/25462b52-79da-40cf-ba28-53c5d0bc84bf?discount=0" class="btn-primary">Get the library — $99</a>
+      <a href="https://github.com/ibrh96-prog/n8n-mcp-servers" class="btn-secondary">Free sample on GitHub</a>
+    </div>
+  </div>
+</div>
+
+<div class="stats">
+  <div class="stats-grid">
+    <div class="stat-item">
+      <div class="stat-num accent">284</div>
+      <div class="stat-label">Workflows</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">28</div>
+      <div class="stat-label">Bundles</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">52</div>
+      <div class="stat-label">Max ops</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num accent">∞</div>
+      <div class="stat-label">Updates</div>
+    </div>
+  </div>
+</div>
+
+<hr class="divider">
+
+<section>
+  <div class="how">
+    <div class="section-label">How it works</div>
+    <h2 class="section-title">One webhook URL.<br>One new capability.</h2>
+    <p class="section-sub">Every MCP Tool Server follows the same simple pattern. Import, activate, and your AI agent gains a new superpower.</p>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">01</div>
+        <div class="step-title">Import JSON</div>
+        <div class="step-desc">Download any workflow JSON and import it into your n8n instance — cloud or self-hosted.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">02</div>
+        <div class="step-title">Activate</div>
+        <div class="step-desc">Add your API credentials, activate the workflow. The mcpTrigger node creates a webhook endpoint instantly.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">03</div>
+        <div class="step-title">Connect agent</div>
+        <div class="step-desc">Point your AI agent at the webhook URL. It discovers all available operations automatically via $fromAI().</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section>
+  <div class="categories-section">
+    <div class="section-label">Coverage</div>
+    <h2 class="section-title">Every major API.<br>Every category.</h2>
+    <div class="cat-grid">
+      <div class="cat-card">
+        <div class="cat-icon">🔗</div>
+        <div class="cat-name">CRM</div>
+        <div class="cat-items">Pipedrive (45 ops), Monica CRM (52 ops), HubSpot, Salesmate, Affinity, Odoo</div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-icon">🛡</div>
+        <div class="cat-name">Security</div>
+        <div class="cat-items">MISP (44 ops), TheHive, Bitwarden, Okta, SecurityScorecard, IPQualityScore</div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-icon">⚙️</div>
+        <div class="cat-name">DevOps</div>
+        <div class="cat-items">GitHub, GitLab, Grafana (16 ops), CircleCI, Netlify, HaloPSA</div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-icon">📣</div>
+        <div class="cat-name">Marketing</div>
+        <div class="cat-items">Mautic (20 ops), Customer.io, KlickTipp (20 ops), Lemlist, MailerLite</div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-icon">🛒</div>
+        <div class="cat-name">E-commerce</div>
+        <div class="cat-items">eBay (7 servers), WooCommerce, Paddle, Stripe, Lyft API</div>
+      </div>
+      <div class="cat-card">
+        <div class="cat-icon">⏱</div>
+        <div class="cat-name">Productivity</div>
+        <div class="cat-items">Harvest (51 ops), Clockify (25 ops), Asana (22 ops), Notion, Todoist</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section>
+  <div class="hof-section">
+    <div class="section-label">Top operations</div>
+    <h2 class="section-title">The biggest servers<br>in the library.</h2>
+    <div class="hof-list">
+      <div class="hof-item"><span class="hof-name">Monica CRM</span><span class="hof-ops">52 ops</span></div>
+      <div class="hof-item"><span class="hof-name">Harvest</span><span class="hof-ops">51 ops</span></div>
+      <div class="hof-item"><span class="hof-name">Pipedrive</span><span class="hof-ops">45 ops</span></div>
+      <div class="hof-item"><span class="hof-name">MISP Threat Intelligence</span><span class="hof-ops">44 ops</span></div>
+      <div class="hof-item"><span class="hof-name">Trello Full</span><span class="hof-ops">41 ops</span></div>
+      <div class="hof-item"><span class="hof-name">Google Workspace Bridge</span><span class="hof-ops">33 ops</span></div>
+      <div class="hof-item"><span class="hof-name">Medium API</span><span class="hof-ops">32 ops</span></div>
+      <div class="hof-item"><span class="hof-name">Spotify</span><span class="hof-ops">30 ops</span></div>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section>
+  <div class="sample-section">
+    <div class="section-label">Free sample</div>
+    <h2 class="section-title">Try before you buy.</h2>
+    <div class="sample-card">
+      <h3>Hacker News MCP Server</h3>
+      <p>3 operations: get all, get article, get user. No API key required. Import the JSON, activate, and your AI agent can query Hacker News instantly.</p>
+      <div class="sample-tags">
+        <span class="tag">No API key</span>
+        <span class="tag">3 operations</span>
+        <span class="tag">Free</span>
+      </div>
+      <a href="https://github.com/ibrh96-prog/n8n-mcp-servers" class="btn-secondary">Download on GitHub</a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<section id="pricing">
+  <div class="pricing-section">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">One price.<br>Everything included.</h2>
+    <div class="price-card">
+      <div class="price-tag">
+        <span class="price-currency">$</span>
+        <span class="price-amount">99</span>
+      </div>
+      <div class="price-note">One-time payment · Lifetime updates</div>
+      <ul class="price-features">
+        <li>284 MCP Tool Server workflow JSON files</li>
+        <li>284 README documentation files</li>
+        <li>28 bundle index files</li>
+        <li>All future servers added at no extra cost</li>
+        <li>Works with n8n Cloud and self-hosted</li>
+        <li>Single-user license</li>
+      </ul>
+      <a href="https://the-mcp-library.lemonsqueezy.com/checkout/buy/25462b52-79da-40cf-ba28-53c5d0bc84bf?discount=0" class="btn-primary" style="display:block;text-align:center;">Get the library — $99</a>
+    </div>
+  </div>
+</section>
+
+<hr class="divider">
+
+<footer>
+  <div class="footer-links">
+    <a href="terms.html">Terms of Service</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="refund.html">Refund Policy</a>
+    <a href="https://github.com/ibrh96-prog/n8n-mcp-servers">GitHub</a>
+  </div>
+  <div class="footer-copy">© 2026 The MCP Library</div>
+</footer>
+
+</body>
+</html>
